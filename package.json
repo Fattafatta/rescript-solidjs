@@ -17,7 +17,6 @@
     "build": "rescript",
     "start": "rescript build -w -with-deps"
   },
-  "private": true,
   "dependencies": {
     "rescript": "^9.1.4"
   },
