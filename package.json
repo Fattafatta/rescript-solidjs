@@ -1,0 +1,27 @@
+{
+  "name": "@fattafatta/rescript-solidjs",
+  "version": "0.1.0",
+  "description": "ReScript bindings for solid-js.",
+  "type": "module",
+  "keywords": [
+    "rescript",
+    "solid-js",
+    "solid",
+    "binding"
+  ],
+  "author": "Fattafatta",
+  "license": "MIT",
+  "repository": "github:Fattafatta/rescript-solidjs",
+  "scripts": {
+    "clean": "rescript clean",
+    "build": "rescript",
+    "start": "rescript build -w -with-deps"
+  },
+  "private": true,
+  "dependencies": {
+    "rescript": "^9.1.4"
+  },
+  "peerDependencies": {
+    "solid-js": "^1.4.3"
+  }
+}
