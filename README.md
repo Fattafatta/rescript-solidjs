@@ -134,6 +134,21 @@ let value = Solid.createMemo((_) => computeExpensiveValue(a(), b()), ~value=1, (
 let value = Solid.createMemo((_) => computeExpensiveValue(a(), b()), ~options=#bool({equals: false}), ());
 ```
 
+#### createResource
+
+Originally `createResource`'s first parameter is optional. To handle this with rescript `source` and `options` have to be passed as labeled arguments. Refetching only supports `bool` right now (no `unknown`).
+
+```rescript
+let fetch = (_, _) => {
+  // return a promise
+}
+
+// without source
+let (data, actions) = Solid.Resource.make(fetch, ())
+// with source
+let (data, actions) = Solid.Resource.make(~source=() => "", fetch, ())
+```
+
 ### Events (e.g. onClick)
 
 Solid offers an optimized array-based alternative to adding normal event listeners. In order to support this syntax a wrapper function `Event.asArray` has to be used.
@@ -347,7 +362,6 @@ Please check the `examples` folder for a complete project configured with `ReScr
 
 For these features no bindings exist yet.
 
-- createResource
 - on
 - observable
 - from
@@ -366,7 +380,7 @@ For these features no bindings exist yet.
 
 ## Acknowledgments
 
-This library used multiple sources for inspiration. Especially <https://github.com/woeps/solidjs-rescript> was of great help to get the initial version going. It proved that `ReScript` and `solidJs` could work together when using `HyperScript`. The *only* missing step was to make the `ReScript` compiler produce `HyperScript`, to that `JSX` would work too.
+This library used multiple sources for inspiration. Especially <https://github.com/woeps/solidjs-rescript> was of great help to get the initial version going. It proved that `ReScript` and `solidJs` could work together when using `HyperScript`. The _only_ missing step was to make the `ReScript` compiler produce `HyperScript`, to that `JSX` would work too.
 
 ### Additional info
 
