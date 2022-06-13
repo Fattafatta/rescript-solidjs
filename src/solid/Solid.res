@@ -55,7 +55,33 @@ external createMemoUnit: (
   unit,
 ) => memo<'value> = "createMemo"
 
-// TODO Add "createResource"
+// TODO: Add "latest", "error", "loading" to createResource
+// TODO: Add support for "unknown" info to createResource
+module Resource = {
+  type fst<'value> = unit => option<'value>
+  type snd<'value> = {
+    mutate: option<'value> => option<'value>,
+    refetch: unit => Js.Promise.t<'value>,
+  }
+  type return<'value> = (fst<'value>, snd<'value>)
+  type info<'value> = {value: option<'value>, refetching: bool}
+  type initial<'value> = {initialValue: option<'value>}
+
+  @module("solid-js")
+  external make: (
+    ~source: accessor<'signal>=?,
+    (accessor<'signal>, info<'value>) => Js.Promise.t<'value>,
+    ~options: initial<'value>=?,
+  ) => return<'value> = "createResource"
+
+  let make: (
+    ~source: accessor<'signal>=?,
+    (accessor<'signal>, info<'value>) => Js.Promise.t<'value>,
+    ~options: initial<'value>=?,
+    unit,
+  ) => return<'value> = (~source=true->Obj.magic, fetcher, ~options=?, _) =>
+    make(~source, fetcher, ~options=options->Obj.magic)
+}
 
 @module("solid-js")
 external onMount: (unit => unit) => unit = "onMount"
