@@ -287,129 +287,131 @@ external generateHydrationScript: hydrateOptions => string = "generateHydrationS
 @module("solid-js/web")
 external hydrationScript: hydrateOptions => React.element = "HydrationScript"
 
-module For = {
-  external toElement: (unit => array<React.element>) => React.element = "%identity"
+module H = {
+  module For = {
+    external toElement: (unit => array<React.element>) => React.element = "%identity"
 
-  @react.component
-  let make = (
-    ~each: unit => array<'component>,
-    ~children: ('component, unit => int) => React.element,
-    ~fallback: option<React.element>=?,
-  ) => {
-    switch fallback {
-    | Some(x) =>
-      mapArrayi(each, children, ~options={fallback: () => x}, ())->createMemoUnit()->toElement
-    | None => mapArrayi(each, children, ())->createMemoUnit()->toElement
+    @react.component @deprecated
+    let make = (
+      ~each: unit => array<'component>,
+      ~children: ('component, unit => int) => React.element,
+      ~fallback: option<React.element>=?,
+    ) => {
+      switch fallback {
+      | Some(x) =>
+        mapArrayi(each, children, ~options={fallback: () => x}, ())->createMemoUnit()->toElement
+      | None => mapArrayi(each, children, ())->createMemoUnit()->toElement
+      }
+    }
+  }
+  module Show = {
+    external toElement: (unit => React.element) => React.element = "%identity"
+
+    module Bool = {
+      @react.component @deprecated
+      let make = (
+        ~\"when": unit => bool,
+        ~fallback: option<React.element>=?,
+        ~children: React.element,
+      ) => {
+        let condition = createMemoUnit(\"when", ())
+
+        createMemoUnit(() => {
+          let c = condition()
+          switch (c, fallback) {
+          | (true, _) => children
+          | (false, Some(f)) => f
+          | (false, None) => React.null
+          }
+        }, ())->toElement
+      }
+    }
+
+    module Option = {
+      @react.component @deprecated
+      let make = (
+        ~\"when": unit => option<'obj>,
+        ~fallback: option<React.element>=?,
+        ~children: 'obj => React.element,
+      ) => {
+        let eq: (option<'obj>, option<'obj>) => bool = (a, b) => {
+          switch (a, b) {
+          | (Some(_), Some(_)) => true
+          | _ => false
+          }
+        }
+        let condition = createMemoUnit(\"when", ~options=#fn({equals: eq}), ())
+        createMemoUnit(() => {
+          let c = condition()
+          switch (c, fallback) {
+          | (Some(o), _) => untrack(() => children(o))
+          | (None, Some(f)) => f
+          | (None, None) => React.null
+          }
+        }, ())->toElement
+      }
+    }
+  }
+
+  module Index = {
+    @react.component @deprecated
+    let make = (
+      ~each: unit => array<'component>,
+      ~children: (accessor<'component>, int) => React.element,
+      ~fallback: option<React.element>=?,
+    ) => {
+      switch fallback {
+      | Some(x) =>
+        indexArray(each, children, ~options={fallback: () => x}, ())
+        ->createMemoUnit()
+        ->For.toElement
+      | None => indexArray(each, children, ())->createMemoUnit()->For.toElement
+      }
     }
   }
 }
 
+module For = {
+  @module("solid-js") @react.component
+  external make: (
+    ~each: array<'component>,
+    ~fallback: React.element=?,
+    ~children: ('component, unit => int) => React.element,
+    unit,
+  ) => React.element = "For"
+}
+
 module Show = {
-  external toElement: (unit => React.element) => React.element = "%identity"
-
-  module Bool = {
-    @react.component
-    let make = (
-      ~\"when": unit => bool,
-      ~fallback: option<React.element>=?,
-      ~children: React.element,
-    ) => {
-      let condition = createMemoUnit(\"when", ())
-
-      createMemoUnit(() => {
-        let c = condition()
-        switch (c, fallback) {
-        | (true, _) => children
-        | (false, Some(f)) => f
-        | (false, None) => React.null
-        }
-      }, ())->toElement
-    }
+  module Option = {
+    @module("solid-js") @react.component
+    external make: (
+      ~\"when": option<'obj>,
+      ~fallback: React.element=?,
+      ~children: 'obj => React.element,
+      unit,
+    ) => React.element = "Show"
   }
 
-  module Option = {
-    @react.component
-    let make = (
-      ~\"when": unit => option<'obj>,
-      ~fallback: option<React.element>=?,
-      ~children: 'obj => React.element,
-    ) => {
-      let eq: (option<'obj>, option<'obj>) => bool = (a, b) => {
-        switch (a, b) {
-        | (Some(_), Some(_)) => true
-        | _ => false
-        }
-      }
-      let condition = createMemoUnit(\"when", ~options=#fn({equals: eq}), ())
-      createMemoUnit(() => {
-        let c = condition()
-        switch (c, fallback) {
-        | (Some(o), _) => untrack(() => children(o))
-        | (None, Some(f)) => f
-        | (None, None) => React.null
-        }
-      }, ())->toElement
-    }
+  module Bool = {
+    @module("solid-js") @react.component
+    external make: (
+      ~\"when": bool,
+      ~fallback: React.element=?,
+      ~children: React.element,
+      unit,
+    ) => React.element = "Show"
   }
 }
 
 module Index = {
-  @react.component
-  let make = (
-    ~each: unit => array<'component>,
-    ~children: (accessor<'component>, int) => React.element,
-    ~fallback: option<React.element>=?,
-  ) => {
-    switch fallback {
-    | Some(x) =>
-      indexArray(each, children, ~options={fallback: () => x}, ())->createMemoUnit()->For.toElement
-    | None => indexArray(each, children, ())->createMemoUnit()->For.toElement
-    }
-  }
+  @module("solid-js") @react.component
+  external make: (
+    ~each: array<'component>,
+    ~fallback: React.element=?,
+    ~children: (unit => 'component, int) => React.element,
+    unit,
+  ) => React.element = "Index"
 }
-
-// TODO: Original bindings for native Control Flow Components. Check if there is a way to make them work.
-// module For = {
-//   @module("solid-js") @react.component
-//   external make: (
-//     ~each: array<'component>,
-//     ~fallback: React.element=?,
-//     ~children: ('component, unit => int) => React.element,
-//     unit,
-//   ) => React.element = "For"
-// }
-
-// module Show = {
-//   module Option = {
-//     @module("solid-js") @react.component
-//     external make: (
-//       ~\"when": option<'obj>,
-//       ~fallback: React.element=?,
-//       ~children: 'obj => React.element,
-//       unit,
-//     ) => React.element = "Show"
-//   }
-
-//   module Bool = {
-//     @module("solid-js") @react.component
-//     external make: (
-//       ~\"when": bool,
-//       ~fallback: React.element=?,
-//       ~children: React.element,
-//       unit,
-//     ) => React.element = "Show"
-//   }
-// }
-
-// module Index = {
-//   @module("solid-js") @react.component
-//   external make: (
-//     ~each: array<'component>,
-//     ~fallback: React.element=?,
-//     ~children: (unit => 'component, int) => React.element,
-//     unit,
-//   ) => React.element = "Index"
-// }
 
 // TODO: Add "Switch" (Might not be useful. Use pattern matching instead)
 
