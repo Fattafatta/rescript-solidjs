@@ -41,7 +41,7 @@ let make = () => {
       <input placeholder="new todo here " ref={el => {inputRef := el}} />
       <button onClick={Event.asArray((addTodo, inputRef))}> {"Add Todo"->React.string} </button>
     </div>
-    <For each={() => todos} fallback={"Nothing to do."->React.string}>
+    <For each={todos} fallback={"Nothing to do."->React.string}>
       {(todo, _) => {
         let {id, text, completed} = todo
 
@@ -53,7 +53,7 @@ let make = () => {
         <div onClick={Solid.Event.asArray((toggleTodo, id))}>
           <input type_="checkbox" checked={completed} />
           <span style classList={makeClassList([("completed", completed), ("open", !completed)])}>
-            {track(() => text->React.string)}
+            {text->React.string}
           </span>
         </div>
       }}
