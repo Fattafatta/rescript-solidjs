@@ -1,12 +1,15 @@
 import { defineConfig } from "vite";
-import solidPlugin from "vite-plugin-solid";
 import createReScriptPlugin from "@jihchi/vite-plugin-rescript";
+import babel from "vite-plugin-babel";
 
 export default defineConfig({
-  plugins: [solidPlugin(), createReScriptPlugin()],
-  build: {
-    target: "esnext",
-    polyfillDynamicImport: false,
-  },
-  publicDir: "public",
+  plugins: [
+    createReScriptPlugin(),
+    babel({
+      babelConfig: {
+        plugins: ["@fattafatta/babel-plugin-rescript-react-to-jsx"],
+        presets: ["solid"],
+      },
+    }),
+  ],
 });

@@ -1,23 +1,22 @@
 {
   "name": "rescript-solidjs-example",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "scripts": {
-    "start:vite": "vite",
     "start:rescript": "rescript build -w -with-deps",
-    "start": "concurrently 'npm:start:rescript' 'npm:start:vite'",
+    "start": "vite",
     "build": "rescript build -with-deps && vite build"
   },
   "private": true,
   "dependencies": {
-    "@fattafatta/rescript-solidjs": "^0.1.1",
-    "react": "npm:@fattafatta/rescript-solidjs@^0.1.1",
+    "@fattafatta/rescript-solidjs": "^0.3.0",
     "rescript": "^9.1.4",
     "solid-js": "^1.4.4"
   },
   "devDependencies": {
+    "@fattafatta/babel-plugin-rescript-react-to-jsx": "^0.1.0",
     "@jihchi/vite-plugin-rescript": "^2.1.0",
-    "concurrently": "^7.2.1",
+    "babel-preset-solid": "^1.4.4",
     "vite": "^2.9.9",
-    "vite-plugin-solid": "^2.2.6"
+    "vite-plugin-babel": "^1.1.0"
   }
 }
