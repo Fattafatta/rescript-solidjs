@@ -346,7 +346,18 @@ In those cases where the `when` clause contains an actual `bool` a different ver
 
 #### Switch/Match
 
-ReScript offers great pattern matching. Use that instead.
+`Match` supports the same Variants (`Bool`, `Option`) as `Show`.
+
+```rescript
+<Solid.Switch fallback={"Fallback"->React.string}>
+  <Solid.Match.Bool \"when"={false}>
+    {"First match"->React.string} 
+  </Solid.Match.Bool>
+  <Solid.Match.Option \"when"={Some("Second match")}>
+    {text => text->React.string}
+  </Solid.Match.Option>
+</Solid.Switch>
+```
 
 #### ErrorBoundary
 
@@ -417,7 +428,6 @@ For these features no bindings exist yet.
 - createMutable
 - lazy
 - createSelector
-- Switch/Match
 - all stuff related to hydration is untested
 - renderToStream
 - Dynamic
