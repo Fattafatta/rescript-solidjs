@@ -415,10 +415,9 @@ For these features no bindings exist yet.
 - produce
 - reconcile
 - createMutable
-- createContext
-- useContext
 - lazy
 - createSelector
+- Switch/Match
 - all stuff related to hydration is untested
 - renderToStream
 - Dynamic
