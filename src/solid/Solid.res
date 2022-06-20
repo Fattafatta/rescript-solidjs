@@ -412,7 +412,34 @@ module Index = {
   ) => React.element = "Index"
 }
 
-// TODO: Add "Switch" (Might not be useful. Use pattern matching instead)
+module Switch = {
+  @module("solid-js") @react.component
+  external make: (
+    ~fallback: React.element=?,
+    ~children: React.element,
+    unit,
+  ) => React.element = "Switch"
+}
+
+module Match = {
+  module Option = {
+    @module("solid-js") @react.component
+    external make: (
+      ~\"when": option<'obj>,
+      ~children: 'obj => React.element,
+      unit,
+    ) => React.element = "Match"
+  }
+
+  module Bool = {
+    @module("solid-js") @react.component
+    external make: (
+      ~\"when": bool,
+      ~children: React.element,
+      unit,
+    ) => React.element = "Match"
+  }
+}
 
 // TODO: Add simple form with "fallback: JSX.Element" too
 module ErrorBoundary = {
