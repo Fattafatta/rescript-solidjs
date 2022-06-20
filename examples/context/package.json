@@ -1,5 +1,5 @@
 {
-  "name": "rescript-solidjs-todolist",
+  "name": "rescript-solidjs-context",
   "version": "0.1.0",
   "scripts": {
     "start:rescript": "rescript build -w -with-deps",

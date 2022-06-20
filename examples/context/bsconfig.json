@@ -1,0 +1,16 @@
+{
+  "name": "rescript-solidjs-context",
+  "reason": { "react-jsx": 3 },
+  "bsc-flags": [],
+  "sources": [
+    {
+      "dir": "src",
+      "subdirs": true
+    }
+  ],
+  "package-specs": [{ "module": "es6", "in-source": true }],
+  "suffix": ".bs.js",
+  "bs-dependencies": ["@fattafatta/rescript-solidjs"],
+  "bs-dev-dependencies": [],
+  "ppx-flags": []
+}
