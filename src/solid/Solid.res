@@ -205,19 +205,18 @@ module Store = {
   // TODO: Add "createMutable"
 }
 
-// TODO: There might be a bug with context and HyperScript. Currently context is not reactive.
-// type provider<'value> = {"value": 'value, "children": React.element}
-// type context<'t> = {
-//   id: Js.Types.symbol,
-//   @as("Provider") provider: React.component<provider<'t>>,
-//   defaultValue: 't,
-// }
+type provider<'value> = {"value": 'value, "children": React.element}
+type context<'value> = {
+  id: Js.Types.symbol,
+  @as("Provider") provider: React.component<provider<'value>>,
+  defaultValue: option<'value>,
+}
 
-// @module("solid-js")
-// external createContext: 'value => context<'value> = "createContext"
+@module("solid-js")
+external createContext: 'value => context<'value> = "createContext"
 
-// @module("solid-js")
-// external useContext: context<'value> => 'value = "useContext"
+@module("solid-js")
+external useContext: context<'value> => 'value = "useContext"
 
 type resolvedChildren = React.element
 type resolved = unit => resolvedChildren

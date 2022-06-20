@@ -253,7 +253,27 @@ let untracked = Solid.Store.unwrap(state)
 
 ### Context
 
-Context is currently not working.
+`createContext` always requires a defaultValue. Also ReScript requires all components to start with an uppercase letter, but the object returned by `createContext` requires lowercase. In order to create the `Provider` component `React.createElement` has to be used.
+
+```rescript
+module Counter = {
+  let context = Solid.createContext(() => 1, () => (), () => ()))
+
+  module Provider = {
+    @react.component
+    let make = (~children, ~count) => {
+      let (count, setCount) = Solid.createSignal(count)
+      let store = (
+        count,
+        () => setCount(p => p + 1),
+        () => setCount(p => p - 1),
+      )
+
+      React.createElement(context.provider, {"value": store, "children": children})
+    }
+  }
+}
+```
 
 ### Secondary Primitives
 
