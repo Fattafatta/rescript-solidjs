@@ -1,5 +1,5 @@
 {
-  "name": "rescript-solidjs-example",
+  "name": "rescript-solidjs-todolist",
   "version": "0.1.0",
   "scripts": {
     "start:rescript": "rescript build -w -with-deps",
@@ -13,9 +13,8 @@
     "solid-js": "^1.4.4"
   },
   "devDependencies": {
-    "@fattafatta/babel-plugin-rescript-react-to-jsx": "^0.1.0",
+    "@fattafatta/babel-preset-rescript-solidjs": "^0.1.1",
     "@jihchi/vite-plugin-rescript": "^2.1.0",
-    "babel-preset-solid": "^1.4.4",
     "vite": "^2.9.9",
     "vite-plugin-babel": "^1.1.0"
   }

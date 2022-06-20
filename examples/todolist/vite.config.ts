@@ -7,8 +7,7 @@ export default defineConfig({
     createReScriptPlugin(),
     babel({
       babelConfig: {
-        plugins: ["@fattafatta/babel-plugin-rescript-react-to-jsx"],
-        presets: ["solid"],
+        presets: ["@fattafatta/babel-preset-rescript-solidjs"],
       },
     }),
   ],
