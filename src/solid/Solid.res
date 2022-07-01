@@ -222,10 +222,44 @@ type resolvedChildren = React.element
 type resolved = unit => resolvedChildren
 @module("solid-js")
 external children: (unit => React.element) => resolved = "useContext"
+module Lazy: {
+  module type T = {
+    let make: React.component<unit>
+    let makeProps: (~key: string=?, unit) => unit
+  }
+  type dynamicImport = Js.Promise.t<{"make": option<React.component<unit>>}>
+  let make: (unit => dynamicImport) => module(T)
+} = {
+  module type T = {
+    let make: React.component<unit>
+    let makeProps: (~key: string=?, unit) => unit
+  }
+  type dynamicImport = Js.Promise.t<{"make": option<React.component<unit>>}>
 
-// TODO: Original lazy function has much more sophisticated type.
-@module("solid-js")
-external lazy_: (unit => Js.Promise.t<React.component<'comp>>) => React.component<'comp> = "lazy"
+  external _makeModule: 'comp => module(T) = "%identity"
+
+  exception ImportError(string)
+
+  @module("solid-js")
+  external lazy_: (unit => Js.Promise.t<{"default": React.component<'c>}>) => React.component<'c> =
+    "lazy"
+
+  @obj external makeProps: (~key: string=?, unit) => _ = ""
+
+  let make = func => {
+    let l = lazy_(() => func()->Js.Promise.then_(comp => {
+        switch comp["make"] {
+        | Some(m) => Js.Promise.resolve({"default": m})
+        | _ => Js.Promise.reject(ImportError("Loaded module is not a component"))
+        }
+      }, _))
+
+    _makeModule({"make": l, "makeProps": makeProps})
+  }
+}
+
+@val
+external import_: string => Lazy.dynamicImport = "import"
 
 @module("solid-js")
 external createUniqueId: unit => string = "createUniqueId"
@@ -414,11 +448,8 @@ module Index = {
 
 module Switch = {
   @module("solid-js") @react.component
-  external make: (
-    ~fallback: React.element=?,
-    ~children: React.element,
-    unit,
-  ) => React.element = "Switch"
+  external make: (~fallback: React.element=?, ~children: React.element, unit) => React.element =
+    "Switch"
 }
 
 module Match = {
@@ -433,11 +464,7 @@ module Match = {
 
   module Bool = {
     @module("solid-js") @react.component
-    external make: (
-      ~\"when": bool,
-      ~children: React.element,
-      unit,
-    ) => React.element = "Match"
+    external make: (~\"when": bool, ~children: React.element, unit) => React.element = "Match"
   }
 }
 
