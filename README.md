@@ -251,6 +251,22 @@ let untracked = Solid.Store.unwrap(state)
 
 `children` and `createUniqueId` should work.
 
+#### lazy
+
+Getting dynamic imports to work with ReScript is tricky, since ReScript works completely without explicit import statements. For it to work, the `"in-source": true` option in `bsconfig.json` should be used and the generated `bs.js` file needs to be referenced within the import.
+
+The `Solid.Lazy.make` function returns a component, that requires to be wrapped in a `module`. Note that this can only be used inside a function (or component) and not on the top level of a file.
+
+Currently only components without any props can be imported.
+
+```rescript
+@react.component
+let make = () => {
+  let module(Comp) = Solid.Lazy.make(() => Solid.import_("./Component.bs.js"))
+  <Comp />
+}
+```
+
 ### Context
 
 `createContext` always requires a defaultValue. Also ReScript requires all components to start with an uppercase letter, but the object returned by `createContext` requires lowercase. In order to create the `Provider` component `React.createElement` has to be used.
@@ -426,7 +442,6 @@ For these features no bindings exist yet.
 - produce
 - reconcile
 - createMutable
-- lazy
 - createSelector
 - all stuff related to hydration is untested
 - renderToStream
