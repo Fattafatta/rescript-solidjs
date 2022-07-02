@@ -11,4 +11,7 @@ export default defineConfig({
       },
     }),
   ],
+  resolve: {
+    dedupe: ["solid-js"],
+  },
 });
