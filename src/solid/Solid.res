@@ -222,31 +222,29 @@ type resolvedChildren = React.element
 type resolved = unit => resolvedChildren
 @module("solid-js")
 external children: (unit => React.element) => resolved = "useContext"
+
 module Lazy: {
   module type T = {
     let make: React.component<unit>
-    let makeProps: (~key: string=?, unit) => unit
+    let makeProps: unit => unit
   }
   type dynamicImport = Js.Promise.t<{"make": option<React.component<unit>>}>
   let make: (unit => dynamicImport) => module(T)
 } = {
   module type T = {
     let make: React.component<unit>
-    let makeProps: (~key: string=?, unit) => unit
+    let makeProps: unit => unit
   }
   type dynamicImport = Js.Promise.t<{"make": option<React.component<unit>>}>
-
-  external _makeModule: 'comp => module(T) = "%identity"
 
   exception ImportError(string)
 
   @module("solid-js")
-  external lazy_: (unit => Js.Promise.t<{"default": React.component<'c>}>) => React.component<'c> =
-    "lazy"
+  external lazy_: (unit => Js.Promise.t<{"default": React.component<unit>}>) => React.component<
+    unit,
+  > = "lazy"
 
-  @obj external makeProps: (~key: string=?, unit) => _ = ""
-
-  let make = func => {
+  let make: (unit => dynamicImport) => module(T) = func => {
     let l = lazy_(() => func()->Js.Promise.then_(comp => {
         switch comp["make"] {
         | Some(m) => Js.Promise.resolve({"default": m})
@@ -254,7 +252,12 @@ module Lazy: {
         }
       }, _))
 
-    _makeModule({"make": l, "makeProps": makeProps})
+    module Return = {
+      let make = l
+      let makeProps = () => ()
+    }
+
+    module(Return)
   }
 }
 
