@@ -218,10 +218,11 @@ external createContext: 'value => context<'value> = "createContext"
 @module("solid-js")
 external useContext: context<'value> => 'value = "useContext"
 
-type resolvedChildren = React.element
-type resolved = unit => resolvedChildren
+type reactelement
+type children<'a> = React.element
+type resolved = unit => children<reactelement>
 @module("solid-js")
-external children: (unit => React.element) => resolved = "useContext"
+external children: (unit => React.element) => resolved = "children"
 
 module Lazy: {
   module type T = {
