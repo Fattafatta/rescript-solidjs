@@ -257,36 +257,43 @@ external children: (unit => React.element) => resolved = "children"
 
 module Lazy: {
   module type T = {
-    let make: React.component<unit>
-    let makeProps: unit => unit
+    type props = {}
+    let make: React.component<props>
   }
-  type dynamicImport = Js.Promise.t<{"make": option<React.component<unit>>}>
+  type dynamicImport = promise<{"make": option<React.component<unit>>}>
   let make: (unit => dynamicImport) => module(T)
 } = {
   module type T = {
-    let make: React.component<unit>
-    let makeProps: unit => unit
+    type props = {}
+    let make: React.component<props>
   }
-  type dynamicImport = Js.Promise.t<{"make": option<React.component<unit>>}>
+
+  type dynamicImport = promise<{"make": option<React.component<unit>>}>
 
   exception ImportError(string)
 
   @module("solid-js")
-  external lazy_: (unit => Js.Promise.t<{"default": React.component<unit>}>) => React.component<
-    unit,
-  > = "lazy"
+  external lazy_: (unit => promise<{"default": React.component<unit>}>) => React.component<unit> =
+    "lazy"
 
   let make: (unit => dynamicImport) => module(T) = func => {
-    let l = lazy_(() => func()->Js.Promise.then_(comp => {
-        switch comp["make"] {
-        | Some(m) => Js.Promise.resolve({"default": m})
-        | _ => Js.Promise.reject(ImportError("Loaded module is not a component"))
-        }
-      }, _))
+    // let l = lazy_(() => func()->Js.Promise.then_(comp => {
+    //     switch comp["make"] {
+    //     | Some(m) => Js.Promise.resolve({"default": m})
+    //     | _ => Js.Promise.reject(ImportError("Loaded module is not a component"))
+    //     }
+    //   }, _))
+    let l = lazy_(async () => {
+      let comp = await func()
+      switch comp["make"] {
+      | Some(m) => {"default": m}
+      | _ => raise(ImportError("Loaded module is not a component"))
+      }
+    })
 
     module Return = {
-      let make = l
-      let makeProps = () => ()
+      type props = {}
+      let make: React.component<props> = Obj.magic(l)
     }
 
     module(Return)
