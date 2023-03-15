@@ -352,7 +352,20 @@ external renderToStringAsyncWith: (
   ~options: renderOptions,
 ) => promise<string> = "renderToStringAsync"
 
-// TODO: Add: "renderToStream"
+// TODO: Add: "pipeTo" to "renderToStream"
+type streamOptions = {
+  nonce?: string,
+  renderId?: string,
+  onCompleteShell?: unit => unit,
+  onCompleteAll?: unit => unit,
+}
+type writable = {write: string => unit}
+type streamReturn = {pipe: writable => unit}
+@module("solid-js/web")
+external renderToStream: (unit => React.element) => streamReturn = "renderToStream"
+@module("solid-js/web")
+external renderToStreamWith: (unit => React.element, ~options: streamOptions) => streamReturn =
+  "renderToStream"
 
 @module("solid-js/web") @val external isServer: bool = "isServer"
 
