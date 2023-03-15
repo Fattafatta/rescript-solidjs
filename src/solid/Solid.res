@@ -108,7 +108,7 @@ type owner
 external getOwner: unit => owner = "getOwner"
 
 @module("solid-js")
-external runWithOwner: (owner, (unit => unit) => 'value) => 'value = "getOwner"
+external runWithOwner: (owner, (unit => unit) => 'value) => 'value = "runWithOwner"
 
 @module("solid-js")
 external mergeProps: ('left, 'right) => 'full = "mergeProps"
