@@ -110,9 +110,9 @@ let make = () => {
   <div>
     {`Hello ReScripters! Counter: ${Js.Int.toString(count())}`->React.string}
     <button
-      onClick={ReactDOM.On.asFn(_ => {
+      onClick={_ => {
         setCount(c => c - 3)
-      })}>
+      }}>
       {"Decrease"->React.string}
     </button>
   </div>
@@ -142,6 +142,12 @@ let (a, setA) = Solid.createSignal("initialValue", ());
 
 // effect that depends on signal `a`
 Solid.createEffect(() => Js.log(a()), ())
+
+// effect with optional initial value
+Solid.createEffect(prev => {
+  Js.log(prev)
+  prev + 1
+}, ~value=1, ())
 ```
 
 #### createMemo
@@ -149,16 +155,16 @@ Solid.createEffect(() => Js.log(a()), ())
 Supports the same `~options` as `createSignal`. `createMemo` passes the result of the previous execution as a parameter. When the previous value is not required use `createMemoUnit` instead.
 
 ```rescript
-let value = Solid.createMemo((prev) => computeExpensiveValue(a(), prev), ());
+let value = Solid.createMemo((prev) => computeValue(a(), prev), ());
 
 // set an initial value
-let value = Solid.createMemo((prev) => computeExpensiveValue(a(), prev), ~value=1, ());
+let value = Solid.createMemo((prev) => computeValue(a(), prev), ~value=1, ());
 
 // with options
-let value = Solid.createMemo((prev) => computeExpensiveValue(a(), prev), ~options=#bool({equals: false}), ());
+let value = Solid.createMemo((prev) => computeValue(a(), prev), ~options=#bool({equals: false}), ());
 
 // with unit function
-let value = Solid.createMemoUnit(() => computeExpensiveValue(a(), b()), ());
+let value = Solid.createMemoUnit(() => computeValue(a(), b()), ());
 ```
 
 #### createResource
@@ -166,7 +172,7 @@ let value = Solid.createMemoUnit(() => computeExpensiveValue(a(), b()), ());
 Originally `createResource`'s first parameter is optional. To handle this with rescript `source` and `options` have to be passed as labeled arguments. Refetching only supports `bool` right now (no `unknown`).
 
 ```rescript
-let fetch = (_, _) => {
+let fetch = (val, _) => {
   // return a promise
 }
 
@@ -174,6 +180,10 @@ let fetch = (_, _) => {
 let (data, actions) = Solid.Resource.make(fetch, ())
 // with source
 let (data, actions) = Solid.Resource.make(~source=() => "", fetch, ())
+// with options
+let (data, actions) = Solid.Resource.make(~source=() => "", fetch, ~options={initialValue: "init"} ())
+// with initialValue. No explicit handling of option<> type necessary for data()
+let (data, actions) = Solid.Resource.makeWithInitial(~source=() => "", fetch, ~options={initialValue: "init"} ())
 ```
 
 ### Events (e.g. onClick)
@@ -187,11 +197,6 @@ Solid offers an optimized array-based alternative to adding normal event listene
 </button>
 
 // normal event syntax
-<button  onClick={Solid.Event.asFn(e => Js.log("Hello"))}>
-  {"Click Me!"->React.string}
-</button>
-
-// BAD, this will not work
 <button  onClick={e => Js.log("Hello")}>
   {"Click Me!"->React.string}
 </button>
@@ -249,7 +254,7 @@ let untracked = Solid.Store.unwrap(state)
 
 ### Component APIs
 
-`children` and `createUniqueId` should work.
+All Component APIs are supported.
 
 #### lazy
 
@@ -263,44 +268,50 @@ Currently only components without any props can be imported.
 @react.component
 let make = () => {
   let module(Comp) = Solid.Lazy.make(() => Solid.import_("./Component.bs.js"))
-  <Comp />
+  <Solid.Suspense fallback={"Loading..."->React.string}><Comp /></Solid.Suspense>
 }
 ```
 
 ### Context
 
-`createContext` always requires a defaultValue. Also ReScript requires all components to start with an uppercase letter, but the object returned by `createContext` requires lowercase. In order to create the `Provider` component `React.createElement` has to be used.
+`createContext` always requires a defaultValue. Also ReScript requires all components to start with an uppercase letter, but the object returned by `createContext` requires lowercase. In order to create the `Provider` component `module(Provider)` has to be used.
 
 ```rescript
-module Counter = {
-  let context = Solid.createContext(() => 1, () => (), () => ()))
+let context = Solid.Context.make((() => "", _ => ()))
 
-  module Provider = {
-    @react.component
-    let make = (~children, ~count) => {
-      let (count, setCount) = Solid.createSignal(count)
-      let store = (
-        count,
-        () => setCount(p => p + 1),
-        () => setCount(p => p - 1),
-      )
+module TextProvider = {
+  @react.component
+  let make = (~children) => {
+    let module(Provider) = context.provider
+    
+    let signal = Solid.createSignal("initial", ())
 
-      React.createElement(context.provider, {"value": store, "children": children})
-    }
+    <Provider value={signal}> {children} </Provider>
   }
 }
+module Nested = {
+  @react.component
+  let make = () => {
+    let (get, set) = Solid.Context.useContext(context)
+    set(p => p ++ "!")
+    <div> {get()->React.string} </div>
+  }
+}
+
+@react.component
+let make = () => <TextProvider><Nested /></TextProvider>
 ```
 
 ### Secondary Primitives
 
-All are untested. `createDeferred` does not support the `timeoutMs` option yet.
+All are supported. `createSelector` is untested.
 
 ### createReaction
 
 ```rescript
-let (s, set) = Solid.createSignal("start", ())
+let (get, set) = Solid.createSignal("start", ())
 let track = Solid.createReaction(() => Js.log("something"))
-track(() => s()->ignore)
+track(() => get()->ignore)
 ```
 
 ### Rendering
@@ -436,15 +447,12 @@ Please check the `examples` folder for a complete project configured with `ReScr
 
 For these features no bindings exist yet.
 
-- on
 - observable
 - from
 - produce
 - reconcile
 - createMutable
-- createSelector
 - all stuff related to hydration is untested
-- renderToStream
 - Dynamic
 - custom directives
 - /_ @once _/
