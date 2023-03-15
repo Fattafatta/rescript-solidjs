@@ -9,7 +9,7 @@ type comparatorOpt<'a> = {equals: ('a, 'a) => bool}
 type reactive<'r> = 'r
 external track: (unit => 'reactive) => reactive<'reactive> = "%identity"
 
-@module("../react/hyper.js") @variadic
+@module("../../react/hyper.js") @variadic
 external makeClassList: array<(string, bool)> => ReactDOM.classList = "makeClassList"
 
 module Event = Solid_Event
@@ -55,32 +55,31 @@ external createMemoUnit: (
   unit,
 ) => thunk<'value> = "createMemo"
 
-// TODO: Add "latest", "error", "loading" to createResource
-// TODO: Add support for "unknown" info to createResource
 module Resource = {
-  type fst<'value> = unit => option<'value>
-  type snd<'value> = {
+  type info<'value> = {value: option<'value>, refetching: bool}
+  type fetchData<'source, 'value> = ('source, info<'value>) => Js.Promise.t<'value>
+
+  type properties<'value> = {
     mutate: option<'value> => option<'value>,
     refetch: unit => Js.Promise.t<'value>,
   }
-  type return<'value> = (fst<'value>, snd<'value>)
-  type info<'value> = {value: option<'value>, refetching: bool}
-  type initial<'value> = {initialValue: option<'value>}
+
+  type options<'value> = {initialValue: 'value}
 
   @module("solid-js")
   external make: (
-    ~source: accessor<'signal>=?,
-    (accessor<'signal>, info<'value>) => Js.Promise.t<'value>,
-    ~options: initial<'value>=?,
-  ) => return<'value> = "createResource"
-
-  let make: (
-    ~source: accessor<'signal>=?,
-    (accessor<'signal>, info<'value>) => Js.Promise.t<'value>,
-    ~options: initial<'value>=?,
+    ~source: accessor<'source>=?,
+    fetchData<'source, 'value>,
+    ~options: options<'value>=?,
     unit,
-  ) => return<'value> = (~source=true->Obj.magic, fetcher, ~options=?, _) =>
-    make(~source, fetcher, ~options=options->Obj.magic)
+  ) => (accessor<option<'value>>, properties<'value>) = "createResource"
+
+  @get external loading: accessor<'value> => bool = "loading"
+  @get external error: accessor<'value> => 'any = "error"
+  @get external latest: accessor<'value> => 'value = "latest"
+  @get
+  external state: accessor<'value> => [#unresolved | #pending | #ready | #refreshing | #errored] =
+    "state"
 }
 
 @module("solid-js")
@@ -102,35 +101,11 @@ type onReturn<'return> = option<'return> => option<'return>
 type onOption = {defer: bool}
 @module("solid-js")
 external on: (
-  accessor<'val>,
-  ('val, 'val, option<'return>) => 'return,
+  array<accessor<'value>>,
+  ('value, 'value, option<'return>) => 'return,
   ~options: onOption=?,
   unit,
 ) => onReturn<'return> = "on"
-
-@module("solid-js")
-external on2: (
-  (accessor<'v1>, accessor<'v2>),
-  (('v1, 'v2), ('v1, 'v2), option<'r>) => 'r,
-  ~options: onOption=?,
-  unit,
-) => onReturn<'r> = "on"
-
-@module("solid-js")
-external on3: (
-  (accessor<'v1>, accessor<'v2>, accessor<'v3>),
-  (('v1, 'v2, 'v3), ('v1, 'v2, 'v3), option<'r>) => 'r,
-  ~options: onOption=?,
-  unit,
-) => onReturn<'r> = "on"
-
-@module("solid-js")
-external on4: (
-  (accessor<'v1>, accessor<'v2>, accessor<'v3>, accessor<'v4>),
-  (('v1, 'v2, 'v3, 'v4), ('v1, 'v2, 'v3, 'v4), option<'r>) => 'r,
-  ~options: onOption=?,
-  unit,
-) => onReturn<'r> = "on"
 
 @module("solid-js")
 external createRoot: ((unit => unit) => 'value) => 'value = "createRoot"
@@ -187,7 +162,7 @@ external startTransition: (unit => unit) => Js.Promise.t<unit> = "startTransitio
 // TODO: Add "observable"
 // type observable<'value>
 // @module("solid-js")
-// external observable: (unit => 'value) => observable<'value> = "startTransition"
+// external observable: (unit => 'value) => observable<'value> = "observable"
 
 // TODO: Add "from"
 
@@ -234,6 +209,21 @@ module Store = {
   external unwrap: t<'store> => 'store = "unwrap"
 
   // TODO: Add "createMutable"
+  // TODO: Add "modifyMutable"
+}
+
+module Context = {
+  type props<'value> = {value: 'value, children: React.element}
+  type t<'value> = {
+    id: Js.Types.symbol,
+    @as("Provider") provider: React.component<props<'value>>,
+    defaultValue: option<'value>,
+  }
+  @module("solid-js")
+  external make: 'value => t<'value> = "createContext"
+
+  @module("solid-js")
+  external useContext: t<'value> => 'value = "useContext"
 }
 
 type provider<'value> = {"value": 'value, "children": React.element}
@@ -318,9 +308,8 @@ external createRenderEffect: ('value => 'value, ~value: 'value=?, unit) => unit 
 @module("solid-js")
 external createComputed: ('value => 'value, ~value: 'value=?, unit) => unit = "createComputed"
 
-type reaction = thunk<unit> => unit
 @module("solid-js")
-external createReaction: (unit => unit) => reaction = "createReaction"
+external createReaction: (unit => unit, unit => unit) => unit = "createReaction"
 
 @module("solid-js")
 external createSelector: (unit => 'source, ~fn: ('other, 'source) => bool=?, unit, 'other) => bool =
@@ -332,30 +321,33 @@ external render: (unit => React.element, Dom.element, unit) => unit = "render"
 @module("solid-js/web")
 external hydrate: (unit => React.element, Dom.element, unit) => unit = "hydrate"
 
-// TODO: Add: options: nonce and renderId
 @module("solid-js/web")
 external renderToString: (unit => React.element) => string = "renderToString"
-
-// TODO: Add options: "nonce", "renderId", "timeoutMs"
 @module("solid-js/web")
 external renderToStringAsync: (unit => React.element) => Js.Promise.t<string> =
   "renderToStringAsync"
 
-// TODO: Add: "renderToStream"
+type writable = {write: string => unit}
+type streamReturn = {pipe: writable => unit}
+@module("solid-js/web")
+external renderToStream: (unit => React.element) => streamReturn = "renderToStream"
 
 @module("solid-js/web") @val external isServer: bool = "isServer"
 
 @module("solid-js") @val external dev: bool = "DEV"
 
-// TODO: Add: nonce and make eventNames optional
 type hydrateOptions = {eventNames: array<string>}
 @module("solid-js/web")
-external generateHydrationScript: hydrateOptions => string = "generateHydrationScript"
+external generateHydrationScript: (~options: hydrateOptions) => string = "generateHydrationScript"
 
-// TODO: Add "nonce" and make eventNames optional
 @module("solid-js/web")
-external hydrationScript: hydrateOptions => React.element = "HydrationScript"
+external generateHydrationScriptWith: (~options: hydrateOptions) => string =
+  "generateHydrationScript"
 
+module HydrationScript = {
+  type props = {eventNames: array<string>}
+  @module("solid-js/web")
+  external make: props => React.element = "HydrationScript"
 }
 
 module For = {
@@ -462,3 +454,88 @@ module Portal = {
 }
 
 // TODO: Add custom directives
+
+// HyperScript conrol flow
+module H = {
+  module For = {
+    external toElement: (unit => array<React.element>) => React.element = "%identity"
+
+    @react.component @deprecated
+    let make = (
+      ~each: unit => array<'component>,
+      ~children: ('component, unit => int) => React.element,
+      ~fallback: option<React.element>=?,
+    ) => {
+      switch fallback {
+      | Some(x) =>
+        mapArrayi(each, children, ~options={fallback: () => x}, ())->createMemoUnit()->toElement
+      | None => mapArrayi(each, children, ())->createMemoUnit()->toElement
+      }
+    }
+  }
+  module Show = {
+    external toElement: (unit => React.element) => React.element = "%identity"
+
+    module Bool = {
+      @react.component @deprecated
+      let make = (
+        ~\"when": unit => bool,
+        ~fallback: option<React.element>=?,
+        ~children: React.element,
+      ) => {
+        let condition = createMemoUnit(\"when", ())
+
+        createMemoUnit(() => {
+          let c = condition()
+          switch (c, fallback) {
+          | (true, _) => children
+          | (false, Some(f)) => f
+          | (false, None) => React.null
+          }
+        }, ())->toElement
+      }
+    }
+
+    module Option = {
+      @react.component @deprecated
+      let make = (
+        ~\"when": unit => option<'obj>,
+        ~fallback: option<React.element>=?,
+        ~children: 'obj => React.element,
+      ) => {
+        let eq: (option<'obj>, option<'obj>) => bool = (a, b) => {
+          switch (a, b) {
+          | (Some(_), Some(_)) => true
+          | _ => false
+          }
+        }
+        let condition = createMemoUnit(\"when", ~options=#fn({equals: eq}), ())
+        createMemoUnit(() => {
+          let c = condition()
+          switch (c, fallback) {
+          | (Some(o), _) => untrack(() => children(o))
+          | (None, Some(f)) => f
+          | (None, None) => React.null
+          }
+        }, ())->toElement
+      }
+    }
+  }
+
+  module Index = {
+    @react.component @deprecated
+    let make = (
+      ~each: unit => array<'component>,
+      ~children: (accessor<'component>, int) => React.element,
+      ~fallback: option<React.element>=?,
+    ) => {
+      switch fallback {
+      | Some(x) =>
+        indexArray(each, children, ~options={fallback: () => x}, ())
+        ->createMemoUnit()
+        ->For.toElement
+      | None => indexArray(each, children, ())->createMemoUnit()->For.toElement
+      }
+    }
+  }
+}
