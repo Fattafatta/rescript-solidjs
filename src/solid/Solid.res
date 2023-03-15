@@ -332,9 +332,17 @@ external render: (unit => React.element, Dom.element, unit) => unit = "render"
 @module("solid-js/web")
 external hydrate: (unit => React.element, Dom.element, unit) => unit = "hydrate"
 
-// TODO: Add: options: nonce and renderId
+type renderOptions = {
+  nonce?: string,
+  renderId?: string,
+  timeoutMs?: int,
+}
+
 @module("solid-js/web")
 external renderToString: (unit => React.element) => string = "renderToString"
+@module("solid-js/web")
+external renderToStringWith: (unit => React.element, ~options: renderOptions) => string =
+  "renderToString"
 
 @module("solid-js/web")
 external renderToStringAsync: (unit => React.element) => promise<string> = "renderToStringAsync"
