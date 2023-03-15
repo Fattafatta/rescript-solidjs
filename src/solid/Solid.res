@@ -187,15 +187,15 @@ external splitProps5: (
 ) => ('selected, 'selected2, 'selected3, 'selected3, 'selected5, 'other) = "splitProps"
 
 @module("solid-js")
-external useTransition: unit => (unit => bool, (unit, unit) => Js.Promise.t<unit>) = "useTransition"
+external useTransition: unit => (unit => bool, (unit, unit) => promise<unit>) = "useTransition"
 
 @module("solid-js")
-external startTransition: (unit => unit) => Js.Promise.t<unit> = "startTransition"
+external startTransition: (unit => unit) => promise<unit> = "startTransition"
 
 // TODO: Add "observable"
 // type observable<'value>
 // @module("solid-js")
-// external observable: (unit => 'value) => observable<'value> = "startTransition"
+// external observable: (unit => 'value) => observable<'value> = "observable"
 
 // TODO: Add "from"
 
@@ -242,6 +242,7 @@ module Store = {
   external unwrap: t<'store> => 'store = "unwrap"
 
   // TODO: Add "createMutable"
+  // TODO: Add "modifyMutable"
 }
 
 module Context = {
