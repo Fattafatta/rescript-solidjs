@@ -336,10 +336,13 @@ external hydrate: (unit => React.element, Dom.element, unit) => unit = "hydrate"
 @module("solid-js/web")
 external renderToString: (unit => React.element) => string = "renderToString"
 
-// TODO: Add options: "nonce", "renderId", "timeoutMs"
 @module("solid-js/web")
-external renderToStringAsync: (unit => React.element) => Js.Promise.t<string> =
-  "renderToStringAsync"
+external renderToStringAsync: (unit => React.element) => promise<string> = "renderToStringAsync"
+@module("solid-js/web")
+external renderToStringAsyncWith: (
+  unit => React.element,
+  ~options: renderOptions,
+) => promise<string> = "renderToStringAsync"
 
 // TODO: Add: "renderToStream"
 
