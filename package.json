@@ -18,9 +18,9 @@
     "start": "rescript build -w -with-deps"
   },
   "dependencies": {
-    "rescript": "^9.1.4"
+    "rescript": "^10.1.2"
   },
   "peerDependencies": {
-    "solid-js": "^1.4.3"
+    "solid-js": "^1.6.0"
   }
 }
