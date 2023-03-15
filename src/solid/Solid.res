@@ -1,7 +1,7 @@
 type accessor<'value> = unit => 'value
 type setter<'value> = ('value => 'value) => unit
 type signal<'value> = (accessor<'value>, setter<'value>)
-type memo<'m> = unit => 'm
+type thunk<'m> = unit => 'm
 type unitToUnit = unit => unit
 type boolOpt = {equals: bool}
 type comparatorOpt<'a> = {equals: ('a, 'a) => bool}
@@ -41,7 +41,7 @@ external createMemo: (
     | #fn(comparatorOpt<'a>)
   ]=?,
   unit,
-) => memo<'value> = "createMemo"
+) => thunk<'value> = "createMemo"
 
 @module("solid-js")
 external createMemoUnit: (
@@ -53,7 +53,7 @@ external createMemoUnit: (
     | #fn(comparatorOpt<'a>)
   ]=?,
   unit,
-) => memo<'value> = "createMemo"
+) => thunk<'value> = "createMemo"
 
 // TODO: Add "latest", "error", "loading" to createResource
 // TODO: Add support for "unknown" info to createResource
@@ -167,7 +167,6 @@ external startTransition: (unit => unit) => Js.Promise.t<unit> = "startTransitio
 
 // TODO: Add "from"
 
-type mapResult<'result> = unit => array<'result>
 type mapOptions = {fallback: unit => React.element}
 @module("solid-js")
 external mapArray: (
@@ -175,14 +174,14 @@ external mapArray: (
   'value => 'result,
   ~options: mapOptions=?,
   unit,
-) => mapResult<'result> = "mapArray"
+) => thunk<array<'result>> = "mapArray"
 @module("solid-js")
 external mapArrayi: (
   unit => array<'value>,
   ('value, unit => int) => 'result,
   ~options: mapOptions=?,
   unit,
-) => mapResult<'result> = "mapArray"
+) => thunk<array<'result>> = "mapArray"
 
 @module("solid-js")
 external indexArray: (
@@ -190,7 +189,7 @@ external indexArray: (
   (unit => 'value, int) => 'result,
   ~options: mapOptions=?,
   unit,
-) => mapResult<'result> = "indexArray"
+) => thunk<array<'result>> = "indexArray"
 
 module Store = {
   // TODO: This allows passing of non store objects to functions (like unwrap) that require a store object.
