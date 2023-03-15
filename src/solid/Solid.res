@@ -347,15 +347,17 @@ external renderToStringAsync: (unit => React.element) => Js.Promise.t<string> =
 
 @module("solid-js") @val external dev: bool = "DEV"
 
-// TODO: Add: nonce and make eventNames optional
-type hydrateOptions = {eventNames: array<string>}
+type hydrateOptions = {nonce?: string, eventNames?: array<string>}
 @module("solid-js/web")
-external generateHydrationScript: hydrateOptions => string = "generateHydrationScript"
-
-// TODO: Add "nonce" and make eventNames optional
+external generateHydrationScript: unit => string = "generateHydrationScript"
 @module("solid-js/web")
-external hydrationScript: hydrateOptions => React.element = "HydrationScript"
+external generateHydrationScriptWith: (~options: hydrateOptions) => string =
+  "generateHydrationScript"
 
+module HydrationScript = {
+  type props = {nonce?: string, eventNames?: array<string>}
+  @module("solid-js/web")
+  external make: props => React.element = "HydrationScript"
 }
 
 module For = {
