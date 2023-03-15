@@ -55,32 +55,76 @@ external createMemoUnit: (
   unit,
 ) => thunk<'value> = "createMemo"
 
-// TODO: Add "latest", "error", "loading" to createResource
-// TODO: Add support for "unknown" info to createResource
+// TODO: Add support for refetch value "unknown" info to createResource
 module Resource = {
-  type fst<'value> = unit => option<'value>
-  type snd<'value> = {
-    mutate: option<'value> => option<'value>,
-    refetch: unit => Js.Promise.t<'value>,
-  }
-  type return<'value> = (fst<'value>, snd<'value>)
   type info<'value> = {value: option<'value>, refetching: bool}
-  type initial<'value> = {initialValue: option<'value>}
+  type fetchData<'source, 'value> = ('source, info<'value>) => promise<'value>
+
+  type properties<'value> = {
+    mutate: option<'value> => option<'value>,
+    refetch: unit => promise<'value>,
+  }
+
+  type options<'value, 'unknown> = {
+    initialValue?: 'value,
+    name?: string,
+    deferStream?: bool,
+    ssrLoadFrom?: [#initial | #server],
+    storage?: option<'value> => signal<option<'value>>,
+    onHydrated?: (option<'unknown>, info<'value>) => unit,
+  }
 
   @module("solid-js")
   external make: (
-    ~source: accessor<'signal>=?,
-    (accessor<'signal>, info<'value>) => Js.Promise.t<'value>,
-    ~options: initial<'value>=?,
-  ) => return<'value> = "createResource"
+    ~source: accessor<'source>=?,
+    fetchData<'source, 'value>,
+    ~options: options<'value, 'unknown>=?,
+    unit,
+  ) => (accessor<option<'value>>, properties<'value>) = "createResource"
 
   let make: (
-    ~source: accessor<'signal>=?,
-    (accessor<'signal>, info<'value>) => Js.Promise.t<'value>,
-    ~options: initial<'value>=?,
+    ~source: accessor<'source>=?,
+    fetchData<'source, 'value>,
+    ~options: options<'value, 'unknown>=?,
     unit,
-  ) => return<'value> = (~source=true->Obj.magic, fetcher, ~options=?, _) =>
-    make(~source, fetcher, ~options=options->Obj.magic)
+  ) => (accessor<option<'value>>, properties<'value>) = (
+    ~source=true->Obj.magic,
+    fetcher,
+    ~options=?,
+    u,
+  ) => make(~source, fetcher, ~options=options->Obj.magic, u)
+
+  type optionsWithInitial<'value, 'unknown> = {
+    initialValue: 'value,
+    name?: string,
+    deferStream?: bool,
+    ssrLoadFrom?: [#initial | #server],
+    storage?: option<'value> => signal<option<'value>>,
+    onHydrated?: (option<'unknown>, info<'value>) => unit,
+  }
+
+  @module("solid-js")
+  external makeWithInitial: (
+    ~source: accessor<'source>,
+    fetchData<'source, 'value>,
+    ~options: optionsWithInitial<'value, 'unknown>,
+    unit,
+  ) => (accessor<'value>, properties<'value>) = "createResource"
+
+  let makeWithInitial: (
+    ~source: accessor<'source>=?,
+    fetchData<'source, 'value>,
+    ~options: optionsWithInitial<'value, 'unknown>,
+    unit,
+  ) => (accessor<'value>, properties<'value>) = (~source=true->Obj.magic, fetcher, ~options, u) =>
+    makeWithInitial(~source, fetcher, ~options, u)
+
+  @get external loading: accessor<'value> => bool = "loading"
+  @get external error: accessor<'value> => 'any = "error"
+  @get external latest: accessor<'value> => 'value = "latest"
+  @get
+  external state: accessor<'value> => [#unresolved | #pending | #ready | #refreshing | #errored] =
+    "state"
 }
 
 @module("solid-js")
