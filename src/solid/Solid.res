@@ -99,12 +99,12 @@ external untrack: (unit => 'value) => 'value = "untrack"
 external batch: (unit => 'value) => 'value = "batch"
 
 type onReturn<'return> = option<'return> => option<'return>
-type onOption = {defer: bool}
+type onOptions = {defer: bool}
 @module("solid-js")
 external on: (
   accessor<'val>,
   ('val, 'val, option<'return>) => 'return,
-  ~options: onOption=?,
+  ~options: onOptions=?,
   unit,
 ) => onReturn<'return> = "on"
 
@@ -112,7 +112,7 @@ external on: (
 external on2: (
   (accessor<'v1>, accessor<'v2>),
   (('v1, 'v2), ('v1, 'v2), option<'r>) => 'r,
-  ~options: onOption=?,
+  ~options: onOptions=?,
   unit,
 ) => onReturn<'r> = "on"
 
@@ -120,7 +120,7 @@ external on2: (
 external on3: (
   (accessor<'v1>, accessor<'v2>, accessor<'v3>),
   (('v1, 'v2, 'v3), ('v1, 'v2, 'v3), option<'r>) => 'r,
-  ~options: onOption=?,
+  ~options: onOptions=?,
   unit,
 ) => onReturn<'r> = "on"
 
@@ -128,7 +128,15 @@ external on3: (
 external on4: (
   (accessor<'v1>, accessor<'v2>, accessor<'v3>, accessor<'v4>),
   (('v1, 'v2, 'v3, 'v4), ('v1, 'v2, 'v3, 'v4), option<'r>) => 'r,
-  ~options: onOption=?,
+  ~options: onOptions=?,
+  unit,
+) => onReturn<'r> = "on"
+
+@module("solid-js")
+external on5: (
+  (accessor<'v1>, accessor<'v2>, accessor<'v3>, accessor<'v4>, accessor<'v5>),
+  (('v1, 'v2, 'v3, 'v4, 'v5), ('v1, 'v2, 'v3, 'v4, 'v5), option<'r>) => 'r,
+  ~options: onOptions=?,
   unit,
 ) => onReturn<'r> = "on"
 
@@ -236,18 +244,39 @@ module Store = {
   // TODO: Add "createMutable"
 }
 
-type provider<'value> = {"value": 'value, "children": React.element}
-type context<'value> = {
-  id: Js.Types.symbol,
-  @as("Provider") provider: React.component<provider<'value>>,
-  defaultValue: option<'value>,
+module Context = {
+  module type Provider = {
+    type props<'value> = {value: 'value, children: React.element}
+    let make: React.component<props<'value>>
+  }
+  type t<'value> = {
+    id: Js.Types.symbol,
+    @as("Provider") provider: module(Provider),
+    defaultValue: option<'value>,
+  }
+  @module("solid-js")
+  external make: 'value => t<'value> = "createContext"
+
+  let make = val => {
+    let ext = make(val)
+    {
+      id: ext.id,
+      defaultValue: ext.defaultValue,
+      provider: {
+        "make": ext.provider,
+      }->Obj.magic,
+    }
+  }
+
+  @module("solid-js")
+  external useContext: t<'value> => 'value = "useContext"
 }
 
 @module("solid-js")
-external createContext: 'value => context<'value> = "createContext"
+let createContext: 'value => Context.t<'value> = Context.make
 
 @module("solid-js")
-external useContext: context<'value> => 'value = "useContext"
+external useContext: Context.t<'value> => 'value = "useContext"
 
 type reactelement
 type children<'a> = React.element
