@@ -18,6 +18,26 @@ export const createElement = function (elementNameOrFunc, props, ...children) {
   return H(elementNameOrFunc, props, children)
 }
 
+/**
+ * Minimal wrapper around HyperScript in order to handle fragments correctly.
+ * 
+ * @param {*} elementNameOrFunc The name of the DOM element. E.g. div, li, input
+ * @param {*} props The properties passed to the DOM element (may contain children)
+ * @returns A HyperScript function call
+ */
+export const jsx = function (elementNameOrFunc, props) {
+  if (typeof elementNameOrFunc == 'function' && !props.children) {
+    return elementNameOrFunc(props)
+  }
+  if (elementNameOrFunc === 'frgmnt' || (elementNameOrFunc.name && elementNameOrFunc.name === 'frgmnt')) {  // fragments are just arrays in HyperScript
+    return props.children
+  }
+  var p2 = {...props}
+  delete p2.delete
+  var children = props.children && Array.isArray(props.children) ? props.children : props.children ? [props.children] : null;
+  return H(elementNameOrFunc, p2, children)
+}
+
 /** Used to distinguish a fragment from other DOM elements */
 export const Fragment = 'frgmnt';
 
