@@ -98,7 +98,15 @@ external untrack: (unit => 'value) => 'value = "untrack"
 @module("solid-js")
 external batch: (unit => 'value) => 'value = "batch"
 
-// TODO: Add "on"
+type onReturn<'return> = option<'return> => option<'return>
+type onOption = {defer: bool}
+@module("solid-js")
+external on: (
+  array<accessor<'value>>,
+  ('value, 'value, option<'return>) => 'return,
+  ~options: onOption=?,
+  unit,
+) => onReturn<'return> = "on"
 
 @module("solid-js")
 external createRoot: ((unit => unit) => 'value) => 'value = "createRoot"
