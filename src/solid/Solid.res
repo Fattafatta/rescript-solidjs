@@ -102,11 +102,35 @@ type onReturn<'return> = option<'return> => option<'return>
 type onOption = {defer: bool}
 @module("solid-js")
 external on: (
-  array<accessor<'value>>,
-  ('value, 'value, option<'return>) => 'return,
+  accessor<'val>,
+  ('val, 'val, option<'return>) => 'return,
   ~options: onOption=?,
   unit,
 ) => onReturn<'return> = "on"
+
+@module("solid-js")
+external on2: (
+  (accessor<'v1>, accessor<'v2>),
+  (('v1, 'v2), ('v1, 'v2), option<'r>) => 'r,
+  ~options: onOption=?,
+  unit,
+) => onReturn<'r> = "on"
+
+@module("solid-js")
+external on3: (
+  (accessor<'v1>, accessor<'v2>, accessor<'v3>),
+  (('v1, 'v2, 'v3), ('v1, 'v2, 'v3), option<'r>) => 'r,
+  ~options: onOption=?,
+  unit,
+) => onReturn<'r> = "on"
+
+@module("solid-js")
+external on4: (
+  (accessor<'v1>, accessor<'v2>, accessor<'v3>, accessor<'v4>),
+  (('v1, 'v2, 'v3, 'v4), ('v1, 'v2, 'v3, 'v4), option<'r>) => 'r,
+  ~options: onOption=?,
+  unit,
+) => onReturn<'r> = "on"
 
 @module("solid-js")
 external createRoot: ((unit => unit) => 'value) => 'value = "createRoot"
