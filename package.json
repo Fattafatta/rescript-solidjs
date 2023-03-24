@@ -15,12 +15,25 @@
   "scripts": {
     "clean": "rescript clean",
     "build": "rescript",
-    "start": "rescript build -w -with-deps"
+    "start": "rescript build -w -with-deps",
+    "test": "vitest"
   },
   "dependencies": {
     "rescript": "^10.1.2"
   },
   "peerDependencies": {
     "solid-js": "^1.6.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.21.0",
+    "@fattafatta/babel-preset-rescript-solidjs": "^0.2.2",
+    "@jihchi/vite-plugin-rescript": "^5.1.0",
+    "@solidjs/testing-library": "^0.7.0",
+    "@testing-library/jest-dom": "^5.16.5",
+    "jsdom": "^21.1.1",
+    "rescript-vitest": "^1.1.0",
+    "rescript-webapi": "^0.7.0",
+    "vite-plugin-babel": "^1.1.3",
+    "vitest": "^0.28.3"
   }
 }
