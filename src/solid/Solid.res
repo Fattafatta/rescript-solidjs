@@ -382,14 +382,17 @@ let lazy_ = Lazy.make
 @module("solid-js")
 external createUniqueId: unit => string = "createUniqueId"
 
-// TODO: Add option: "timeoutMs"
+type deferred<'equals> = {
+  equals?: 'equals,
+  timeoutMs?: int,
+}
 @module("solid-js")
 external createDeferred: (
   unit => 'value,
   ~options: @unwrap
   [
-    | #bool(boolOpt)
-    | #fn(comparatorOpt<'a>)
+    | #bool(deferred<bool>)
+    | #fn(deferred<('value, 'value) => bool>)
   ]=?,
   unit,
 ) => accessor<'value> = "createDeferred"
