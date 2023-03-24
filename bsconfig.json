@@ -6,11 +6,16 @@
     {
       "dir": "src",
       "subdirs": true
+    },
+    {
+      "dir": "tests",
+      "type": "dev",
+      "subdirs": true
     }
   ],
   "package-specs": [{ "module": "es6", "in-source": true }],
   "suffix": ".bs.js",
   "bs-dependencies": [],
-  "bs-dev-dependencies": [],
+  "bs-dev-dependencies": ["rescript-webapi", "rescript-vitest"],
   "ppx-flags": []
 }
