@@ -231,7 +231,7 @@ external splitProps5: (
 ) => ('selected, 'selected2, 'selected3, 'selected3, 'selected5, 'other) = "splitProps"
 
 @module("solid-js")
-external useTransition: unit => (unit => bool, (unit, unit) => promise<unit>) = "useTransition"
+external useTransition: unit => (unit => bool, thunk<unit> => promise<unit>) = "useTransition"
 
 @module("solid-js")
 external startTransition: (unit => unit) => promise<unit> = "startTransition"
