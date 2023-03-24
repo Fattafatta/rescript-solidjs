@@ -318,8 +318,9 @@ external createRenderEffect: ('value => 'value, ~value: 'value=?, unit) => unit 
 @module("solid-js")
 external createComputed: ('value => 'value, ~value: 'value=?, unit) => unit = "createComputed"
 
+type reaction = thunk<unit> => unit
 @module("solid-js")
-external createReaction: (unit => unit, unit => unit) => unit = "createReaction"
+external createReaction: (unit => unit) => reaction = "createReaction"
 
 @module("solid-js")
 external createSelector: (unit => 'source, ~fn: ('other, 'source) => bool=?, unit, 'other) => bool =
