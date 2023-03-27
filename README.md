@@ -49,7 +49,9 @@ Basically the `React.createElement` function provided by the fake react is repla
 
 ## Installation
 
-Uses the babel transform variant (recommended way). To install the previous version with HyperScript, check the end of this README.
+This library supports the new ReScript versions >= 10.1, but it is backwards-compatible with older versions. For ReScript 10.1 or higher, just install the library normally.
+
+For older versions (< 10.1) additional `bsc-flags` have to be set (see below).
 
 ### Library
 
@@ -71,7 +73,20 @@ Add `@fattafatta/rescript-solidjs` as a dependency to your `bsconfig.json`:
 "bs-dependencies": ["@fattafatta/rescript-solidjs"]
 ```
 
+#### For ReScript < 10.1
+
+Some additional compiler flags have to be set for older versions:
+
+```json
+"reason": { "react-jsx": 3 },
+"bsc-flags": ["-open ReactV3", "-open SolidV3"],
+"bs-dependencies": ["@fattafatta/rescript-solidjs"]
+```
+(See also: The [migration guide](https://rescript-lang.org/docs/react/latest/migrate-react#v3-compatible-mode) from ReScript)
+
 ### Babel preset
+
+Using babel to transform ReScript output to SolidJS compatible code. To install the previous version with HyperScript, check the end of this README.
 
 Install with `npm`:
 
