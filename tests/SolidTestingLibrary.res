@@ -30,8 +30,13 @@ external screen: renderResult = "screen"
 
 @send external queryByText: (renderResult, string) => Webapi.Dom.Element.t = "queryByText"
 
+@send external getByRole: (renderResult, string) => Webapi.Dom.Element.t = "getByRole"
+
 @send
 external toBeInTheDocument: Vitest.expected<Webapi.Dom.Element.t> => unit = "toBeInTheDocument"
+
+@send
+external toHaveClass: (Vitest.expected<Webapi.Dom.Element.t>, string) => unit = "toHaveClass"
 
 @send
 external toBeVisible: Vitest.expected<Webapi.Dom.Element.t> => unit = "toBeVisible"
@@ -58,7 +63,7 @@ external toBeNull: Vitest.expected<'a> => unit = "toBeNull"
 external toBeTruthy: Vitest.expected<'a> => unit = "toBeTruthy"
 
 @get
-external _not: Vitest.expected<'a> => Vitest.expected<'a> = "not"
+external not_: Vitest.expected<'a> => Vitest.expected<'a> = "not"
 
 type fireEvent
 

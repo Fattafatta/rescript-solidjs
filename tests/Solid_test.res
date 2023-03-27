@@ -426,7 +426,7 @@ describe("Solid control flow", () => {
     t->assertions(2)
     render(_ => <ControlFlow />)
 
-    screen->queryByText("switchbool")->expect->_not->toBeInTheDocument
+    screen->queryByText("switchbool")->expect->not_->toBeInTheDocument
     screen->getByText("switchoption")->expect->toBeInTheDocument
   })
 
@@ -482,7 +482,7 @@ describe("Solid jsx attributes", () => {
     t->assertions(1)
     render(_ => <div style={"display: none"}> {"text"->React.string} </div>)
 
-    screen->queryByText("text")->expect->_not->toBeVisible
+    screen->queryByText("text")->expect->not_->toBeVisible
   })
 })
 

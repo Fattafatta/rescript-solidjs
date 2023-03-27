@@ -927,6 +927,8 @@ module Props = {
     @optional
     textAnchor: string,
     @optional
+    textContent: string,
+    @optional
     textDecoration: string,
     @optional
     textLength: string,
