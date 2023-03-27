@@ -142,7 +142,7 @@ type domProps = {
   @optional
   class?: string /* Solid also allows class */,
   @optional
-  classList?: classList /* Solid also allows class */,
+  classList?: classList,
   contentEditable?: bool,
   contextMenu?: string,
   @as("data-testid") dataTestId?: string,
@@ -555,6 +555,7 @@ type domProps = {
   targetX?: string,
   targetY?: string,
   textAnchor?: string,
+  textContent?: string /* Solid also has textContent */,
   textDecoration?: string,
   textLength?: string,
   textRendering?: string,
