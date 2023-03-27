@@ -470,9 +470,9 @@ module HydrationScript = {
 module For = {
   @module("solid-js") @react.component
   external make: (
-    ~each: array<'component>,
+    ~each: array<'item>,
     ~fallback: React.element=?,
-    ~children: ('component, unit => int) => React.element,
+    ~children: ('item, unit => int) => React.element,
     unit,
   ) => React.element = "For"
 }
@@ -502,9 +502,9 @@ module Show = {
 module Index = {
   @module("solid-js") @react.component
   external make: (
-    ~each: array<'component>,
+    ~each: array<'item>,
     ~fallback: React.element=?,
-    ~children: (unit => 'component, int) => React.element,
+    ~children: (unit => 'item, int) => React.element,
     unit,
   ) => React.element = "Index"
 }
