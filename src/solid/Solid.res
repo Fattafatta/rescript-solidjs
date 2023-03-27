@@ -334,15 +334,15 @@ module Lazy: {
     type props = {}
     let make: React.component<props>
   }
-  type dynamicImport = promise<{"make": option<React.component<unit>>}>
-  let make: (unit => dynamicImport) => module(T)
+  type import
+  let make: (unit => import) => module(T)
 } = {
   module type T = {
     type props = {}
     let make: React.component<props>
   }
 
-  type dynamicImport = promise<{"make": option<React.component<unit>>}>
+  type import = promise<{"make": option<React.component<unit>>}>
 
   exception ImportError(string)
 
@@ -350,7 +350,7 @@ module Lazy: {
   external lazy_: (unit => promise<{"default": React.component<unit>}>) => React.component<unit> =
     "lazy"
 
-  let make: (unit => dynamicImport) => module(T) = func => {
+  let make: (unit => import) => module(T) = func => {
     // let l = lazy_(() => func()->Js.Promise.then_(comp => {
     //     switch comp["make"] {
     //     | Some(m) => Js.Promise.resolve({"default": m})
@@ -375,7 +375,9 @@ module Lazy: {
 }
 
 @val
-external import_: string => Lazy.dynamicImport = "import"
+external import_: string => Lazy.import = "import"
+
+let lazy_ = Lazy.make
 
 @module("solid-js")
 external createUniqueId: unit => string = "createUniqueId"
