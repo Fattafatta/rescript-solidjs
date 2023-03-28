@@ -18,7 +18,7 @@ let make = () => {
       switch inputEl->getInputValue->String2.trim {
       | "" => ()
       | text => {
-          setTodos(td => td->Array2.concat([{id: createUniqueId(), text: text, completed: false}]))
+          setTodos(td => td->Array2.concat([{id: createUniqueId(), text, completed: false}]))
           inputEl->setInputValue("")
         }
       }

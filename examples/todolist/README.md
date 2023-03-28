@@ -1,6 +1,6 @@
 # rescript-solidjs-example
 
-Example implementation of a todo list using `ReScript`, `solidJs` and `vite`.
+Example implementation of a todo list using `ReScript`, `SolidJS` and `vite`.
 
 ## Usage
 

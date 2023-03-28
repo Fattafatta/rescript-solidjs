@@ -7,12 +7,15 @@ module Nested = {
     <>
       <div> {count.count->React.int} </div>
       <button onClick={Event.asArray((increment, ()))}> {"+"->React.string} </button>
-      <button onClick={Event.asFn(_ => decrement())}> {"-"->React.string} </button>
+      <button onClick={_ => decrement()}> {"-"->React.string} </button>
     </>
   }
 }
 
 @react.component
 let make = () => {
-  <> <h1> {"Welcome to Counter App"->React.string} </h1> <Nested /> </>
+  <Counter.Provider count={1}>
+    <h1> {"Welcome to Counter App"->React.string} </h1>
+    <Nested />
+  </Counter.Provider>
 }
