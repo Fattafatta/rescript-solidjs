@@ -6,6 +6,8 @@ let context = createContext(({count: 0}, () => (), () => ()))
 module Provider = {
   @react.component
   let make = (~children, ~count) => {
+    let module(ContextProvider) = context.provider
+
     let (state, setState) = Store.make({count: count})
     let store = (
       state,
@@ -13,6 +15,6 @@ module Provider = {
       () => setState(p => {count: p.count - 1}),
     )
 
-    React.createElement(context.provider, {"value": store, "children": children})
+    <ContextProvider value={store}> {children} </ContextProvider>
   }
 }

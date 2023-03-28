@@ -1,6 +1,6 @@
 {
   "name": "rescript-solidjs-example",
-  "reason": { "react-jsx": 3 },
+  "jsx": { "version": 4, "mode": "automatic" },
   "bsc-flags": [],
   "sources": [
     {

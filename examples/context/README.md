@@ -1,6 +1,6 @@
 # rescript-solidjs-context
 
-Example implementation of a Context Provider using `ReScript`, `solidJs` and `vite`.
+Example implementation of a Context Provider using `ReScript`, `SolidJS` and `vite`.
 
 ## Usage
 
