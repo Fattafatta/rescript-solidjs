@@ -1,10 +1,7 @@
 name: Tests
 
 on:
-  push:
-    branches: [ beta ]
-  pull_request:
-    branches: [ beta ]
+  workflow_call:
 
 jobs:
   test:
@@ -13,13 +10,13 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [lts/*]
 
     steps:
-      - name: Setup repo
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Setup NodeJs ${{ matrix.node-version }}
+      - name: Setup Node ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
