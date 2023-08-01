@@ -1,6 +1,6 @@
 {
   "name": "@fattafatta/rescript-solidjs",
-  "version": "0.5.3",
+  "version": "0.6.0",
   "description": "ReScript bindings for solid-js.",
   "type": "module",
   "keywords": [
